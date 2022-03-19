@@ -33,7 +33,7 @@ def similar(a, b):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    company_name_list = ['Apple','Bee','PIG','Giao']
+    company_name_list = ['Apple','Bee','PIG','Giao','miaomiao']
     print(similar('D&I', 'doe and Ingalls'))
     goThroughExcel(company_name_list)
 
