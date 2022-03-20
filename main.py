@@ -1,9 +1,43 @@
-# This is a sample Python script.
+# Author @Yichen Wang
 
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
 import openpyxl
 from difflib import SequenceMatcher
+
+def manageSampleExcel(sample_path): #Convert sample.xlsx to a matrix
+    m = []
+    wb_obj = openpyxl.load_workbook(sample_path)
+    sheet_obj = wb_obj.active
+    m_row = sheet_obj.max_row
+    m_col = sheet_obj.max_column
+    for i in range(1, m_row + 1):
+        com = []
+        for j in range(1,m_col + 1):
+            cell_obj = sheet_obj.cell(row=i, column=j)
+            if cell_obj.value != None:
+                com.append(cell_obj.value)
+        m.append(com)
+    print(m)
+    return m
+
+
+
+def getTargetName(test_path, company_name_matrix):
+    wb_obj = openpyxl.load_workbook(test_path)
+    sheet_obj = wb_obj.active
+    m_row = sheet_obj.max_row
+
+    for i in range(1, m_row + 1):
+        cell_obj = sheet_obj.cell(row = i, column = 1)
+        for j in range(0, len(company_name_matrix)):
+            for k in range(0, len(company_name_matrix[j])):
+                check_name = company_name_matrix[j][k]
+                similar_rate = similar(cell_obj.value, check_name)
+                if similar_rate == 1:
+                    sheet_obj.cell(row=i, column=2).value = company_name_matrix[j][0]
+
+    wb_obj.save("test.xlsx")
+
+
 
 def goThroughExcel(l):
     #1. Read the Excel, get the number of rows m_row
@@ -33,8 +67,9 @@ def similar(a, b):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    company_name_list = ['Apple','Bee','PIG','Giao','miaomiao']
-    print(similar('D&I', 'doe and Ingalls'))
-    goThroughExcel(company_name_list)
+    sampleExcelPath = "sample.xlsx"
+    testExcelPath = "test.xlsx"
+    company_name_matrix = manageSampleExcel(sampleExcelPath)
+    getTargetName(testExcelPath, company_name_matrix)
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
