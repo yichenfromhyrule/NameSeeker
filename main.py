@@ -1,6 +1,9 @@
 # Author @Yichen Wang
-
+# There are two excel sheets
+# sample.xlsx - The original name with possible name
+# test.xlsx - The recorded name need to be find the original name
 import openpyxl
+import numpy
 from difflib import SequenceMatcher
 
 def manageSampleExcel(sample_path): #Convert sample.xlsx to a matrix
@@ -28,12 +31,19 @@ def getTargetName(test_path, company_name_matrix):
 
     for i in range(1, m_row + 1):
         cell_obj = sheet_obj.cell(row = i, column = 1)
+        list_of_list_col_num = len(company_name_matrix)
+        list_of_list_row_num = max([len(sub_list) for sub_list in company_name_matrix])
+        similar_rate_list_of_list = [[0 for n in range(0, list_of_list_row_num)] for m in range (0, list_of_list_col_num)]
         for j in range(0, len(company_name_matrix)):
             for k in range(0, len(company_name_matrix[j])):
                 check_name = company_name_matrix[j][k]
                 similar_rate = similar(cell_obj.value, check_name)
-                if similar_rate == 1:
-                    sheet_obj.cell(row=i, column=2).value = company_name_matrix[j][0]
+                similar_rate_list_of_list[j][k] = similar_rate
+        # Convert to array
+        similar_rate_array = numpy.array(similar_rate_list_of_list)
+        max_rate_location = numpy.where(similar_rate_array == numpy.amax(similar_rate_array))
+        max_rate_row_num = int(max_rate_location[0])
+        sheet_obj.cell(row=i, column=2).value = company_name_matrix[max_rate_row_num][0]
 
     wb_obj.save("test.xlsx")
 
